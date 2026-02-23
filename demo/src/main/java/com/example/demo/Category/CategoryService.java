@@ -22,10 +22,6 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    public void deleteCategory(Long id) {
-        categoryRepository.deleteById(id);
-    }
-
     public Category updateCategory(Long id, Category updatedCategory) {
         return categoryRepository.findById(id).map(category -> {
             category.setName(updatedCategory.getName());
@@ -37,5 +33,14 @@ public class CategoryService {
         return categoryRepository.findById(categoryId)
                 .map(Category::getProducts)
                 .orElse(null);
+    }
+
+    public void deleteCategoryAndProducts(Long categoryId) {
+        categoryRepository.findById(categoryId).ifPresent(category -> {
+            category.getProducts().forEach(product -> {
+                product.setCategory(null); // Unlink products from the category
+            });
+            categoryRepository.delete(category); // Delete the category
+        });
     }
 }

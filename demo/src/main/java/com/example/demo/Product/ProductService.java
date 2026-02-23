@@ -110,6 +110,9 @@ public class ProductService {
     }
 
     public void deleteProduct(Long id) {
+        Product product = getProductById(id);
+        product.setCategory(null);
+        product.getTags().clear();
         productRepository.deleteById(id);
     }
 }
