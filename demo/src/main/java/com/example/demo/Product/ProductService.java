@@ -3,11 +3,13 @@ package com.example.demo.Product;
 import com.example.demo.Category.Category;
 import com.example.demo.Category.CategoryRepository;
 import com.example.demo.Tag.Tag;
+import com.example.demo.Tag.TagRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -16,14 +18,14 @@ import java.util.Set;
 public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final TagRepository tagRepository;
 
     public List<Product> getProducts() {
         return productRepository.findAllWithDetails();
     }
 
-    @EntityGraph(attributePaths = {"category", "tags"})
     public Product getProductById(Long id) {
-        return productRepository.findByIdWithDetails(id)
+        return productRepository.findByIdWithCategoryAndTags(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
@@ -91,14 +93,7 @@ public class ProductService {
             existingProduct.setCategory(category);
         }
 
-        if (productDTO.getTags() != null) {
-            for (Tag tag : productDTO.getTags()) {
-                if (tag.getName() == null || tag.getName().isEmpty()) {
-                    throw new IllegalArgumentException("Tag name must be provided");
-                }
-            }
-            existingProduct.setTags(productDTO.getTags());
-        }
+
 
         existingProduct.setName(productDTO.getName());
         existingProduct.setPrice(productDTO.getPrice());

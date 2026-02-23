@@ -46,9 +46,9 @@ class TagController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/products")
-    public ResponseEntity<Void> addProductToTag(@PathVariable Long id, @RequestBody Product product) {
-        tagService.addProductToTag(id, product);
+    @PostMapping("/{id}/products/{productId}")
+    public ResponseEntity<Void> addProductToTag(@PathVariable Long id, @PathVariable Long productId) {
+        tagService.addProductToTag(id, productId);
         return ResponseEntity.ok().build();
     }
 }

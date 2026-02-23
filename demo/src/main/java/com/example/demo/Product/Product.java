@@ -3,6 +3,7 @@ package com.example.demo.Product;
 import com.example.demo.Category.Category;
 import com.example.demo.Tag.Tag;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -25,12 +26,14 @@ public class Product {
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private ProductDetails productDetails;
 
-    @JsonBackReference
+
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = true)
+    @JsonIgnoreProperties("products")
     private Category category;
 
     @ManyToMany(mappedBy = "products")
+    @JsonIgnoreProperties("products")
     private Set<Tag> tags;
 
     public Set<Tag> getTags() {

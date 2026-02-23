@@ -19,7 +19,7 @@ public class Category {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @JsonManagedReference
+
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Product> products;
 }
