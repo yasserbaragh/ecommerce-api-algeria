@@ -1,5 +1,6 @@
 package com.example.demo.Tag;
 
+import com.example.demo.Product.Product;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,12 @@ class TagService {
         Tag tag = getTagById(id);
         tag.getProducts().clear();
         tagRepository.deleteById(id);
+    }
+
+    public void addProductToTag(Long tagId, Product product) {
+        Tag tag = getTagById(tagId);
+        tag.getProducts().add(product);
+        tagRepository.save(tag);
     }
 
 }

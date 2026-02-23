@@ -29,7 +29,12 @@ public class ProductController {
         return productService.addProduct(product);
     }
 
-    @PutMapping("{id}")
+    @GetMapping("/{id}")
+    public Product getProductById(@PathVariable Long id) {
+        return productService.getProductById(id);
+    }
+
+    @PutMapping("/{id}")
     public Product updateProduct(@PathVariable Long id, @RequestBody ProductDto product) {
         return productService.updateProduct(id, product);
     }

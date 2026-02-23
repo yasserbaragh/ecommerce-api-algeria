@@ -32,13 +32,14 @@ public class ProductService {
     public List<Product> getAllProducts() {
         List<Product> products = productRepository.findAllWithDetails();
         products.forEach(p -> {
-            String name = p.getCategory().getName();
+            String name = (p.getCategory() != null) ? p.getCategory().getName(): "No Category";
         });
         return products;
     }
 
     @Transactional
     public Product addProduct(ProductDto productDTO) {
+        Product product = new Product();
         if (productDTO.getCategoryName() == null || productDTO.getCategoryName().isEmpty()) {
             throw new IllegalArgumentException("Category must be provided");
         }
@@ -48,14 +49,20 @@ public class ProductService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Category '" + productDTO.getCategoryName() + "' does not exist"
                 ));
-        for (Tag tag : productDTO.getTags()) {
-            if (tag.getName() == null || tag.getName().isEmpty()) {
-                throw new IllegalArgumentException("Tag name must be provided");
+        if (productDTO.getTags() == null) {
+            product.setTags(null);
+        } else {
+            for (Tag tag : productDTO.getTags()) {
+                if (tag.getName() == null || tag.getName().isEmpty()) {
+                    throw new IllegalArgumentException("Tag name must be provided");
+                }
             }
+            product.setTags(productDTO.getTags());
         }
 
+
         // Map DTO to Product entity
-        Product product = new Product();
+
         ProductDetails details = new ProductDetails();
         details.setDescription(productDTO.getDescription());
         details.setWeight(productDTO.getWeight());
@@ -65,7 +72,8 @@ public class ProductService {
         product.setPrice(productDTO.getPrice());
         product.setStock(productDTO.getStock());
         product.setCategory(category);
-        product.setTags(productDTO.getTags());
+
+
         details.setProduct(product);
         product.setProductDetails(details);
 

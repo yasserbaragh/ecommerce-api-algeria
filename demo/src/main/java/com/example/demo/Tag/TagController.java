@@ -45,4 +45,10 @@ class TagController {
         tagService.deleteTag(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/products")
+    public ResponseEntity<Void> addProductToTag(@PathVariable Long id, @RequestBody Product product) {
+        tagService.addProductToTag(id, product);
+        return ResponseEntity.ok().build();
+    }
 }
