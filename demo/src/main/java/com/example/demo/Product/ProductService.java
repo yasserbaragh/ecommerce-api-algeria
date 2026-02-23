@@ -2,11 +2,13 @@ package com.example.demo.Product;
 
 import com.example.demo.Category.Category;
 import com.example.demo.Category.CategoryRepository;
+import com.example.demo.Tag.Tag;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +18,15 @@ public class ProductService {
 
     public List<Product> getProducts() {
         return productRepository.findAllWithDetails();
+    }
+
+    public Product getProductById(Long id) {
+        return productRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+    }
+    public Set<Tag> getTagsByProductId(Long id) {
+        Product product = getProductById(id);
+        return product.getTags();
     }
 
     @Transactional
