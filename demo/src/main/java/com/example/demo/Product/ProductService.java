@@ -51,16 +51,8 @@ public class ProductService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Category '" + productDTO.getCategoryName() + "' does not exist"
                 ));
-        if (productDTO.getTags() == null) {
-            product.setTags(null);
-        } else {
-            for (Tag tag : productDTO.getTags()) {
-                if (tag.getName() == null || tag.getName().isEmpty()) {
-                    throw new IllegalArgumentException("Tag name must be provided");
-                }
-            }
-            product.setTags(productDTO.getTags());
-        }
+
+        addTagToProd(productDTO, product);
 
 
         // Map DTO to Product entity
@@ -82,6 +74,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    @Transactional
     public Product updateProduct(Long id, ProductDto productDTO) {
         Product existingProduct = getProductById(id);
 
@@ -91,9 +84,10 @@ public class ProductService {
                             "Category '" + productDTO.getCategoryName() + "' does not exist"
                     ));
             existingProduct.setCategory(category);
+
         }
 
-
+        addTagToProd(productDTO, existingProduct);
 
         existingProduct.setName(productDTO.getName());
         existingProduct.setPrice(productDTO.getPrice());
@@ -110,6 +104,23 @@ public class ProductService {
         details.setWarrantyMonths(productDTO.getWarrantyMonths());
 
         return productRepository.save(existingProduct);
+    }
+
+    private void addTagToProd(ProductDto productDTO, Product existingProduct) {
+        if (productDTO.getTags() != null) {
+            // 1. Clear the existing relationship
+            existingProduct.getTags().clear();
+
+            // 2. Find and add the new tags
+            for (String tagName : productDTO.getTags()) {
+                Tag tag = tagRepository.findByName(tagName)
+                        .orElseThrow(() -> new IllegalArgumentException("Tag '" + tagName + "' not found"));
+
+
+                existingProduct.getTags().add(tag);
+                tag.getProducts().add(existingProduct);
+            }
+        }
     }
 
     public void deleteProduct(Long id) {

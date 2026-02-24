@@ -20,5 +20,5 @@ public class ProductDto {
     private String description;
     private Double weight;
     private Integer warrantyMonths;
-    private Set<Tag> tags;
+    private Set<String> tags;
 }
